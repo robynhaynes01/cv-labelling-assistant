@@ -103,12 +103,3 @@ def validate_dataset_format(dataset_path):
     categories = os.listdir(os.path.join(dataset_path, 'images'))
     for category in categories:
         validate_image_and_label_names_match(dataset_path, category)
-    
-
-if __name__ == "__main__":
-    dataset_path = "datasets/coco8"
-    try:
-        if validate_dataset_format(dataset_path):
-            print(f"Dataset format for '{dataset_path}' is valid.")
-    except ValueError as e:
-        print(f"Dataset format validation error: {e}")
