@@ -64,7 +64,7 @@ def validate_root_dataset_directory(dataset_root):
     if f"{dataset_name}.yaml" not in children and f"{dataset_name}.yml" not in children:
         raise ValueError(f"Dataset root directory '{dataset_root}' must contain a YAML config file named '{dataset_name}.yaml' or '{dataset_name}.yml'.")
 
-def validate_dataset_format(dataset_path) -> bool:
+def validate_dataset_format(dataset_path):
     # Validation logic for dataset format, mainly for YOLO models
     # Example of the expected format:
     # datasets/
@@ -104,7 +104,6 @@ def validate_dataset_format(dataset_path) -> bool:
     for category in categories:
         validate_image_and_label_names_match(dataset_path, category)
     
-    return True
 
 if __name__ == "__main__":
     dataset_path = "datasets/coco8"
