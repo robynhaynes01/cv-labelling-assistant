@@ -1,4 +1,4 @@
-def create_new_dataset(dataset_name: str):
+def create_new_dataset(dataset_name, data_path):
     # Initially, dataset creation is relying on a folder structure
     # that is flat. In the future, this can be expended to support more
     # dynamic structures.
