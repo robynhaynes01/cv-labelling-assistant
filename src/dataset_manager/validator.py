@@ -10,6 +10,16 @@ def validate_label_format(label_file):
     if not os.path.splitext(label_file)[1].lower() in VALID_LABEL_FORMATS:
         raise ValueError(f"Invalid label format for file '{label_file}'. Supported formats are: {', '.join(VALID_LABEL_FORMATS)}.")
 
+def validate_import_image_and_label_formats(data_root):
+    files = os.listdir(data_root)
+    for file in files:
+        if os.path.splitext(file)[1].lower() in VALID_IMAGE_FORMATS:
+            validate_image_format(file)
+        elif os.path.splitext(file)[1].lower() in VALID_LABEL_FORMATS:
+            validate_label_format(file)
+        else:
+            raise ValueError(f"Unsupported file format for file '{file}' in dataset root directory. Supported image formats are: {', '.join(VALID_IMAGE_FORMATS)}. Supported label formats are: {', '.join(VALID_LABEL_FORMATS)}.")
+
 def validate_image_and_label_names_match(dataset_root, training_category):
     images_dir = os.path.join(dataset_root, 'images', training_category)
     labels_dir = os.path.join(dataset_root, 'labels', training_category)
