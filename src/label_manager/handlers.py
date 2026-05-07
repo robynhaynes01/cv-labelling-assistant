@@ -9,8 +9,6 @@ class LabelHandlerInterface:
     def convert_labels(self, labels: list, target_format: str) -> list:
         raise NotImplementedError
     
-    def _determine_label_format(self, file_path: str) -> str:
-        raise NotImplementedError
     
 class LabelTXTHandler(LabelHandlerInterface):
     def load_labels(self, file_path: str) -> list:
