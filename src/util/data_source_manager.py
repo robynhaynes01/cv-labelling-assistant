@@ -7,7 +7,7 @@ class SourceManagerInterface:
     
 class LabelMeSourceManager(SourceManagerInterface):
     def normalize_source(self, box_data):
-        # For LabelMe, we can directly use the Pascal VOC format
+        # For LabelMe, we flatten the list of points into a single dimension and it uses the Pascal VOC format
         flattened_box = [coord for point in box_data for coord in point]
         return flattened_box, 'pascal_voc'
     
