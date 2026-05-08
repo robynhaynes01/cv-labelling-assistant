@@ -3,7 +3,7 @@ import pathlib
 from dataset_manager.common import DATASET_CATEGORIES, VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS
 
 def validate_image_format(image_file):
-    if not os.path.splitname(image_file)[1].lower() in VALID_IMAGE_FORMATS:
+    if not os.path.splitext(image_file)[1].lower() in VALID_IMAGE_FORMATS:
         raise ValueError(f"Invalid image format for file '{image_file}'. Supported formats are: {', '.join(VALID_IMAGE_FORMATS)}.")
 
 def validate_label_format(label_file):
