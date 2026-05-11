@@ -37,7 +37,7 @@ class LabelMeSourceManager(SourceManagerInterface):
         return standard_format
 
     def convert_from_standard_format(self, data: StandardFormat):
-        [bbox.denormalize_bboxes() for bbox in data.get_bboxes()]
+        data.denoramize_bboxes()
         return {
             'version': '',
             'flags': {},
@@ -85,6 +85,6 @@ if __name__ == "__main__":
 
     manager = StandardSourceManager()
     standard_format = manager.normalize_source_data('labelme', test_data)
-    print(standard_format)
+    print(standard_format.get_bboxes())
     labelme_data = manager.denormalize_to_source_data('labelme', standard_format)
     print(labelme_data)
