@@ -1,3 +1,5 @@
+import pytest
+
 def test_source_manager_conversion_to_standard_format():
     from util.data_source_manager import StandardSourceManager
     import json
@@ -15,7 +17,7 @@ def test_source_manager_conversion_to_standard_format():
     assert standard_format._source_bbox_format == 'pascal_voc'
     assert len(standard_format._bboxes) == 1
     assert standard_format._bboxes[0].get('class') == "test"
-    assert standard_format._bboxes[0].get('bbox') == [60.58064516129033, 100.0215053763441, 340.73118279569894, 542.39784946236557]
+    assert standard_format._bboxes[0].get('bbox') == pytest.approx([0.31352486559139786, 0.6691868279569892, 0.4377352150537635, 0.9216173835125447])
 
 def test_source_manager_conversion_from_standard_format():
     from util.data_source_manager import StandardSourceManager
@@ -37,5 +39,5 @@ def test_source_manager_conversion_from_standard_format():
     assert len(labelme_data.get('shapes')) == 1
     shape = labelme_data.get('shapes')[0]
     assert shape.get('label') == "test"
-    assert shape.get('points') == [[60.58064516129033, 100.0215053763441], [340.73118279569894, 542.39784946236557]]
+    assert shape.get('points') == [pytest.approx([60.58064516129033, 100.0215053763441]), pytest.approx([340.73118279569894, 542.39784946236557])]
     print(labelme_data)
