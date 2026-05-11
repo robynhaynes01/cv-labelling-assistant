@@ -1,4 +1,5 @@
 from util.standard_format import StandardFormat
+from util.common import PASCAL_VOC, LABELME
 
 class SourceManagerInterface:
     def convert_to_standard_format(self, data):
@@ -29,12 +30,14 @@ class LabelMeSourceManager(SourceManagerInterface):
 
         standard_format.set_image_name(image_name)
         standard_format.set_image_dimensions(image_width, image_height)
-        standard_format.set_source_format('labelme')
-        standard_format.set_source_bbox_format('pascal_voc')
+        standard_format.set_source_format(LABELME)
+        standard_format.set_source_bbox_format(PASCAL_VOC)
+        standard_format.normalize_bboxes()
 
         return standard_format
 
     def convert_from_standard_format(self, data: StandardFormat):
+        [bbox.denormalize_bboxes() for bbox in data.get_bboxes()]
         return {
             'version': '',
             'flags': {},
@@ -59,7 +62,7 @@ class LabelMeSourceManager(SourceManagerInterface):
 class StandardSourceManager():
     def __init__(self):
         self._source_mangers = {
-            'labelme': LabelMeSourceManager(),
+            LABELME: LabelMeSourceManager(),
         }
 
     def normalize_source_data(self, source_name, data):
