@@ -8,7 +8,7 @@ class BBoxManager:
             'coco': COCOHandler()
         }
 
-    def convert_bbox(self, bbox, source_format, target_format):
+    def convert_bbox(self, bbox, source_format, target_format, image_width=None, image_height=None):
         if source_format not in self._transformers:
             raise ValueError(f"Unsupported source format: {source_format}")
         if target_format not in self._transformers:
@@ -16,9 +16,9 @@ class BBoxManager:
         
         transformer = self._transformers[source_format]
         if target_format == 'yolo':
-            return transformer.to_cxcywh(bbox)
+            return transformer.to_cxcywh(bbox, image_width, image_height)
         elif target_format == 'pascal_voc':
-            return transformer.to_xyxy(bbox)
+            return transformer.to_xyxy(bbox, image_width, image_height)
         elif target_format == 'coco':
             return transformer.to_xywh(bbox)
         
