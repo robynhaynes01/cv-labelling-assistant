@@ -1,5 +1,24 @@
 import os
 import pathlib
+from dataset_manager.common import DATASET_CATEGORIES, VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS
+
+def validate_image_format(image_file):
+    if not os.path.splitext(image_file)[1].lower() in VALID_IMAGE_FORMATS:
+        raise ValueError(f"Invalid image format for file '{image_file}'. Supported formats are: {', '.join(VALID_IMAGE_FORMATS)}.")
+
+def validate_label_format(label_file):
+    if not os.path.splitext(label_file)[1].lower() in VALID_LABEL_FORMATS:
+        raise ValueError(f"Invalid label format for file '{label_file}'. Supported formats are: {', '.join(VALID_LABEL_FORMATS)}.")
+
+def validate_import_image_and_label_formats(data_root):
+    files = os.listdir(data_root)
+    for file in files:
+        if os.path.splitext(file)[1].lower() in VALID_IMAGE_FORMATS:
+            validate_image_format(file)
+        elif os.path.splitext(file)[1].lower() in VALID_LABEL_FORMATS:
+            validate_label_format(file)
+        else:
+            raise ValueError(f"Unsupported file format for file '{file}' in dataset root directory. Supported image formats are: {', '.join(VALID_IMAGE_FORMATS)}. Supported label formats are: {', '.join(VALID_LABEL_FORMATS)}.")
 
 def validate_image_and_label_names_match(dataset_root, training_category):
     images_dir = os.path.join(dataset_root, 'images', training_category)
@@ -18,20 +37,18 @@ def validate_training_categories(dataset_root):
     image_categories = sorted(os.listdir(images_dir))
     label_categories = sorted(os.listdir(labels_dir))
 
-    categories = {'train': {'cat_name': 'train', 'optional': False}, 'val': {'cat_name': 'val', 'optional': False}, 'test': {'cat_name': 'test', 'optional': True}}
-
     for category in image_categories:
-        if category not in categories.keys():
-            raise ValueError(f"Invalid training category '{category}' found in 'images' subdirectory. Please ensure that the 'images' subdirectory contains only valid training categories: {', '.join(list(categories.keys()))}.")
+        if category not in DATASET_CATEGORIES.keys():
+            raise ValueError(f"Invalid training category '{category}' found in 'images' subdirectory. Please ensure that the 'images' subdirectory contains only valid training categories: {', '.join(list(DATASET_CATEGORIES.keys()))}.")
     for category in label_categories:
-        if category not in categories.keys():
-            raise ValueError(f"Invalid training category '{category}' found in 'labels' subdirectory. Please ensure that the 'labels' subdirectory contains only valid training categories: {', '.join(list(categories.keys()))}.")
+        if category not in DATASET_CATEGORIES.keys():
+            raise ValueError(f"Invalid training category '{category}' found in 'labels' subdirectory. Please ensure that the 'labels' subdirectory contains only valid training categories: {', '.join(list(DATASET_CATEGORIES.keys()))}.")
 
-    for category in categories.keys():
-        valid_category = categories.get(category)
-        if valid_category.get('cat_name') not in image_categories and not valid_category.get('optional'):
+    for category in DATASET_CATEGORIES.keys():
+        optional_category = DATASET_CATEGORIES.get(category).get('optional', False)
+        if category not in image_categories and not optional_category:
             raise ValueError(f"Mandatory training category '{category}' is missing in 'images' subdirectory. Please ensure that the 'images' subdirectory contains the mandatory training category: '{category}'.")
-        if valid_category.get('cat_name') not in label_categories and not valid_category.get('optional'):
+        if category not in label_categories and not optional_category:
             raise ValueError(f"Mandatory training category '{category}' is missing in 'labels' subdirectory. Please ensure that the 'labels' subdirectory contains the mandatory training category: '{category}'.")
 
     if image_categories != label_categories:
