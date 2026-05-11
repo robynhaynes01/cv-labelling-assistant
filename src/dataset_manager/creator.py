@@ -5,6 +5,45 @@ from dataset_manager.common import VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS, DAT
 from util.data_source_manager import StandardSourceManager
 from label_manager.manager import LabelManager
 
+def populate_dataset(dataset_name, data_path, labels, classes):
+    # This function will handle the actual copying of image and label files into the correct folder structure
+    # and renaming them if necessary to ensure they match.
+    dataset_location = f'datasets/{dataset_name}'
+    label_manager = LabelManager()
+    
+    for category in labels:
+        category_images_folder = os.path.join(dataset_location, 'images', category)
+        category_labels_folder = os.path.join(dataset_location, 'labels', category)
+
+        for label in labels.get(category):
+            image_name = label.get_image_name()
+            image_source_path = os.path.join(data_path, image_name)
+            image_destination_path = os.path.join(category_images_folder, image_name)
+            print(f"Copying image from '{image_source_path}' to '{image_destination_path}'")
+            if os.path.exists(image_source_path):
+                os.rename(image_source_path, image_destination_path)
+            else:
+                raise ValueError(f"Image file '{image_name}' not found in source data path. Please ensure that all images referenced in the labels exist in the provided data path.")
+
+            label_file_name = os.path.splitext(image_name)[0] + '.txt'  # Assuming YOLO format for labels
+            label_destination_path = os.path.join(category_labels_folder, label_file_name)
+            formatted_labels = []
+            for bbox in label.get_bboxes():
+                class_name = classes.index(bbox.get('class'))
+                bbox_coordinates = bbox.get('bbox')
+                formatted_labels.append(f"{class_name} {' '.join(map(str, bbox_coordinates))}")
+            label_manager.save_labels(formatted_labels, label_destination_path)
+
+
+
+def create_training_and_validation_split(labels, split_ratio=0.8):
+    total_labels = len(labels)
+    split_index = int(total_labels * split_ratio)
+    training_labels = labels[:split_index]
+    validation_labels = labels[split_index:]
+    label_split = {'train': training_labels, 'val': validation_labels}
+    return label_split
+
 def generate_dataset_yaml(dataset_name, classes):
     yaml_data = {
         'train': 'images/train',
@@ -86,6 +125,11 @@ def create_new_dataset(dataset_name, source_name, data_path):
 
     # Generate the new yaml file for the dataset
     generate_dataset_yaml(dataset_name, classes)
+
+    # Create the training and validation split
+    label_split = create_training_and_validation_split(standardised_labels)
+
+    populate_dataset(dataset_name, data_path, label_split, classes)
 
 if __name__ == "__main__":
     create_new_dataset('test_dataset', 'labelme', 'test/mock_dataset')

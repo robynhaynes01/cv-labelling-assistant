@@ -37,6 +37,9 @@ class StandardFormat:
     def get_bboxes(self):
         return self._bboxes
     
+    def get_image_name(self):
+        return self._image_name
+    
     def normalize_bboxes(self):
         # Placeholder for bbox normalization logic
         for bbox in self._bboxes:

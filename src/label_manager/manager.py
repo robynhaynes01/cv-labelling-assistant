@@ -16,6 +16,13 @@ class LabelManager:
         if not handler:
             raise ValueError(f"Unsupported label format: {file_extension}")
         return handler.load_labels(file_path)
+    
+    def save_labels(self, labels, file_path) -> None:
+        file_extension = self._determine_label_format(file_path)
+        handler = self._handlers.get(file_extension)
+        if not handler:
+            raise ValueError(f"Unsupported label format: {file_extension}")
+        handler.save_labels(labels, file_path)
         
     def _determine_label_format(self, file_path: str) -> str:
         return os.path.splitext(file_path)[1]
