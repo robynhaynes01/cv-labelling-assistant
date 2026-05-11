@@ -31,5 +31,8 @@ class StandardFormat:
     def set_excess_data(self, data: dict):
         self._excess_data = data
 
+    def get_bboxes(self):
+        return self._bboxes
+
     def __repr__(self):
         return f"StandardFormat(image_name={self._image_name}, image_width={self._image_width}, image_height={self._image_height}, source_format={self._source_format}, source_bbox_format={self._source_bbox_format}, target_format={self._target_format})"
