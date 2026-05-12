@@ -54,6 +54,15 @@ def generate_dataset_yaml(dataset_name, classes):
     with open(f'datasets/{dataset_name}/{dataset_name}.yaml', 'w') as yaml_file:
         yaml.dump(yaml_data, yaml_file)
 
+def convert_labels_to_standard_format(label_files, source_name, data_path) -> list[StandardFormat]:
+    standardised_labels = []
+    manager = StandardSourceManager()
+    for label_file in label_files:
+        label_manager = LabelManager()
+        raw_label_data = label_manager.load_labels(os.path.join(data_path, label_file))
+        standardised_label_data = manager.normalize_source_data(source_name, raw_label_data)
+        standardised_labels.append(standardised_label_data)
+
 def extract_unique_classes_from_labels(labels):
     unique_classes = set()
     for label in labels:
@@ -114,13 +123,7 @@ def create_new_dataset(dataset_name, source_name, data_path):
     labels = isolate_labels(data_path)
     images = isolate_images(data_path)
 
-    standardised_labels = []
-    manager = StandardSourceManager()
-    for label_file in labels:
-        label_manager = LabelManager()
-        raw_label_data = label_manager.load_labels(os.path.join(data_path, label_file))
-        standardised_label_data = manager.normalize_source_data(source_name, raw_label_data)
-        standardised_labels.append(standardised_label_data)
+    standardised_labels = convert_labels_to_standard_format(labels, source_name, data_path)
 
     classes = extract_unique_classes_from_labels(standardised_labels)
 
