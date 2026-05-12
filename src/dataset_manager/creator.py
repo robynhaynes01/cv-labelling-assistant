@@ -2,6 +2,7 @@ import os
 import yaml
 from dataset_manager.validator import validate_import_image_and_label_formats
 from dataset_manager.common import VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS, DATASET_CATEGORIES
+from util.standard_format import StandardFormat
 from util.data_source_manager import StandardSourceManager
 from label_manager.manager import LabelManager
 
@@ -36,7 +37,7 @@ def populate_dataset(dataset_name, data_path, labels, classes):
 
 
 
-def create_training_and_validation_split(labels, split_ratio=0.8):
+def create_training_and_validation_split(labels: list[StandardFormat], split_ratio=0.8):
     total_labels = len(labels)
     split_index = int(total_labels * split_ratio)
     training_labels = labels[:split_index]
