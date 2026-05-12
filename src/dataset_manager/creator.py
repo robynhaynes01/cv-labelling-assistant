@@ -62,6 +62,7 @@ def convert_labels_to_standard_format(label_files, source_name, data_path) -> li
         raw_label_data = label_manager.load_labels(os.path.join(data_path, label_file))
         standardised_label_data = manager.normalize_source_data(source_name, raw_label_data)
         standardised_labels.append(standardised_label_data)
+    return standardised_labels
 
 def extract_unique_classes_from_labels(labels):
     unique_classes = set()
