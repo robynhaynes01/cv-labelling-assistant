@@ -44,7 +44,7 @@ def create_training_and_validation_split(labels: list[StandardFormat], split_rat
     log.info("Splitting labels into training and validation categories...")
     total_labels = len(labels)
     split_index = int(total_labels * split_ratio)
-    log.debug(f"Split ratio is: {split_ratio}. This generates {split_index + 1} training labels and {(len(total_labels) - split_index) + 1} validation labels")
+    log.debug(f"Split ratio is: {split_ratio}. This generates {split_index + 1} training labels and {(total_labels - split_index) + 1} validation labels")
     training_labels = labels[:split_index]
     validation_labels = labels[split_index:]
     label_split = {'train': training_labels, 'val': validation_labels}
