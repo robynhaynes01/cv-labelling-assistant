@@ -2,17 +2,14 @@ import os
 from loguru import logger as log
 from dataset_manager.common import DATASET_CATEGORIES, VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS
 
-@log.catch
 def validate_image_format(image_file):
     if not os.path.splitext(image_file)[1].lower() in VALID_IMAGE_FORMATS:
         raise ValueError(f"Invalid image format for file '{image_file}'. Supported formats are: {', '.join(VALID_IMAGE_FORMATS)}.")
 
-@log.catch
 def validate_label_format(label_file):
     if not os.path.splitext(label_file)[1].lower() in VALID_LABEL_FORMATS:
         raise ValueError(f"Invalid label format for file '{label_file}'. Supported formats are: {', '.join(VALID_LABEL_FORMATS)}.")
 
-@log.catch
 def validate_import_image_and_label_formats(data_root):
     files = os.listdir(data_root)
     for file in files:
@@ -23,7 +20,6 @@ def validate_import_image_and_label_formats(data_root):
         else:
             raise ValueError(f"Unsupported file format for file '{file}' in dataset root directory. Supported image formats are: {', '.join(VALID_IMAGE_FORMATS)}. Supported label formats are: {', '.join(VALID_LABEL_FORMATS)}.")
 
-@log.catch
 def validate_image_and_label_names_match(dataset_root, training_category):
     images_dir = os.path.join(dataset_root, 'images', training_category)
     labels_dir = os.path.join(dataset_root, 'labels', training_category)
@@ -34,7 +30,6 @@ def validate_image_and_label_names_match(dataset_root, training_category):
     if image_files != label_files:
         raise ValueError(f"Image files and label files in '{training_category}' category do not match. A name mismatch has been detected, which may lead to issues during training. Please ensure that each image file has a corresponding label file with the same name (excluding the file extension).")
 
-@log.catch
 def validate_training_categories(dataset_root):
     images_dir = os.path.join(dataset_root, 'images')
     labels_dir = os.path.join(dataset_root, 'labels')
@@ -59,7 +54,6 @@ def validate_training_categories(dataset_root):
     if image_categories != label_categories:
         raise ValueError(f"Training categories in 'images' and 'labels' subdirectories do not match. A category mismatch has been detected, which may lead to issues during training. Please ensure that the same set of training categories (e.g., 'train', 'val', 'test') exist in both 'images' and 'labels' subdirectories.") 
 
-@log.catch
 def validate_images_and_labels(dataset_root):
     images = os.path.join(dataset_root, 'images')
     labels = os.path.join(dataset_root, 'labels')
@@ -69,7 +63,6 @@ def validate_images_and_labels(dataset_root):
     if sorted(os.listdir(images)) != sorted(os.listdir(labels)):
         raise ValueError(f"Dataset root directory '{dataset_root}' must contain matching subdirectories in 'images' and 'labels' subdirectories.")
 
-@log.catch
 def validate_root_dataset_directory(dataset_root):
     if not os.path.exists(dataset_root):
         raise ValueError(f"Dataset root directory '{dataset_root}' does not exist.")
