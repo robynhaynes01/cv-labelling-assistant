@@ -1,5 +1,5 @@
 import os
-import pathlib
+from loguru import logger as log
 from dataset_manager.common import DATASET_CATEGORIES, VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS
 
 def validate_image_format(image_file):
@@ -53,7 +53,6 @@ def validate_training_categories(dataset_root):
 
     if image_categories != label_categories:
         raise ValueError(f"Training categories in 'images' and 'labels' subdirectories do not match. A category mismatch has been detected, which may lead to issues during training. Please ensure that the same set of training categories (e.g., 'train', 'val', 'test') exist in both 'images' and 'labels' subdirectories.") 
-
 
 def validate_images_and_labels(dataset_root):
     images = os.path.join(dataset_root, 'images')

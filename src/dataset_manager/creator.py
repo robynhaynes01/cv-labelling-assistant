@@ -1,14 +1,17 @@
 import os
 import yaml
+from loguru import logger as log
 from dataset_manager.validator import validate_import_image_and_label_formats
 from dataset_manager.common import VALID_IMAGE_FORMATS, VALID_LABEL_FORMATS, DATASET_CATEGORIES
 from util.standard_format import StandardFormat
 from util.data_source_manager import StandardSourceManager
 from label_manager.manager import LabelManager
 
+@log.catch
 def populate_dataset(dataset_name, data_path, labels, classes):
     # This function will handle the actual copying of image and label files into the correct folder structure
     # and renaming them if necessary to ensure they match.
+    log.debug(f"Populating dataset '{dataset_name}' at 'datasets/{dataset_name}'...")
     dataset_location = f'datasets/{dataset_name}'
     label_manager = LabelManager()
     
@@ -20,7 +23,7 @@ def populate_dataset(dataset_name, data_path, labels, classes):
             image_name = label.get_image_name()
             image_source_path = os.path.join(data_path, image_name)
             image_destination_path = os.path.join(category_images_folder, image_name)
-            print(f"Copying image from '{image_source_path}' to '{image_destination_path}'")
+            log.info(f"Copying image from '{image_source_path}' to '{image_destination_path}'")
             if os.path.exists(image_source_path):
                 os.rename(image_source_path, image_destination_path)
             else:
@@ -38,14 +41,17 @@ def populate_dataset(dataset_name, data_path, labels, classes):
 
 
 def create_training_and_validation_split(labels: list[StandardFormat], split_ratio=0.8):
+    log.info("Splitting labels into training and validation categories...")
     total_labels = len(labels)
     split_index = int(total_labels * split_ratio)
+    log.debug(f"Split ratio is: {split_ratio}. This generates {split_index} training labels and {total_labels - split_index} validation labels")
     training_labels = labels[:split_index]
     validation_labels = labels[split_index:]
     label_split = {'train': training_labels, 'val': validation_labels}
     return label_split
 
 def generate_dataset_yaml(dataset_name, classes):
+    log.info(f"Generating dataset yaml for '{dataset_name}', with classes: {', '.join(classes)}")
     yaml_data = {
         'train': 'images/train',
         'val': 'images/val',
@@ -55,6 +61,7 @@ def generate_dataset_yaml(dataset_name, classes):
         yaml.dump(yaml_data, yaml_file)
 
 def convert_labels_to_standard_format(label_files, source_name, data_path) -> list[StandardFormat]:
+    log.info(f"Converting labels from '{source_name}' into a standardised format...")
     standardised_labels = []
     manager = StandardSourceManager()
     for label_file in label_files:
@@ -65,6 +72,7 @@ def convert_labels_to_standard_format(label_files, source_name, data_path) -> li
     return standardised_labels
 
 def extract_unique_classes_from_labels(labels):
+    log.info("Extracting all unique class names from provided labels...")
     unique_classes = set()
     for label in labels:
         for bbox in label.get_bboxes():
@@ -73,25 +81,31 @@ def extract_unique_classes_from_labels(labels):
     return unique_classes
 
 def isolate_labels(data_path) -> list[str]:
+    log.info(f"Isolating labels from '{data_path}'...")
     label_files = [file for file in os.listdir(data_path) if os.path.splitext(file)[1] in VALID_LABEL_FORMATS]
     return label_files
 
 def isolate_images(data_path) -> list[str]:
+    log.info(f"Isolating images from '{data_path}'...")
     image_files = [file for file in os.listdir(data_path) if os.path.splitext(file)[1] in VALID_IMAGE_FORMATS]
     return image_files
 
 def generate_dataset_folder_structure(dataset_name):
+    log.info(f"Generating the dataset file structure for '{dataset_name}'...")
     dataset_folder = f'datasets/{dataset_name}'
     if not os.path.exists(dataset_folder):
+        log.debug("Generating root folder...")
         os.makedirs(dataset_folder)
     images_folder = os.path.join(dataset_folder, 'images')
     labels_folder = os.path.join(dataset_folder, 'labels')
 
+    log.debug("Geneating image and label sub-directories...")
     if not os.path.exists(images_folder):
         os.makedirs(images_folder)
     if not os.path.exists(labels_folder):
         os.makedirs(labels_folder)
 
+    log.debug(f"Generating image and label sub-categories: {', '.join(DATASET_CATEGORIES.keys())}")
     training_categories = DATASET_CATEGORIES.keys()
     for category in training_categories:
         category_images_folder = os.path.join(images_folder, category)
